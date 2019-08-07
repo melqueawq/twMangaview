@@ -1,1 +1,4 @@
 venv
+view/__pycache__
+.vscode
+view/access_token.py
