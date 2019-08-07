@@ -4,7 +4,12 @@ from .twmng import twitter_api
 
 
 @app.route('/')
-def show_entries():
+def index():
+    pass
+
+
+@app.route('/view/')
+def view_book():
     tw = twitter_api()
     tw.login_twitter()
 
@@ -12,8 +17,8 @@ def show_entries():
     tweet_list = []
 
     tweet_list.append(tw.get_tweet(root_twid))
-    tlist = tw.get_timeline(tweet_list[0]['user']['screen_name'],
-                            root_twid)
+    tlist = tw.get_self_conversation(tweet_list[0]['user']['screen_name'],
+                                     root_twid)
     tweet_list = tweet_list + tlist
 
     image_list = []
