@@ -2,13 +2,14 @@
 <html>
 
 <head>
-    <title>aa</title>
+
 </head>
 
 <body>
-    {% for image in image_list %}
-    <img src="{{image}}" alt="">
-    {% endfor %}
+    <form action="/view" method="get">
+        <input type="text" name="twurl">
+        <input type="submit" value="検索">
+    </form>
 </body>
 
 </html>

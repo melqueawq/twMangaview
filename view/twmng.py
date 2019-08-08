@@ -6,8 +6,7 @@ class twitter_api:
     def login_twitter(self):
         self.api = twitter.Twitter(
             auth=twitter.OAuth(Token.ACCESS_TOKEN, Token.ACCESS_TOKEN_SECRET,
-                               Token.CONSUMER_KEY, Token.CONSUMER_SECRET),
-            retry=True)
+                               Token.CONSUMER_KEY, Token.CONSUMER_SECRET))
 
     def get_self_conversation(self, name, root_twid):
         tweets = []
@@ -37,4 +36,11 @@ class twitter_api:
         status = self.api.statuses.show(
             id=twid, include_entities=True)
         return status
-# end of class twitter_api
+
+    def get_api_status(self):
+        status = self.api.application.rate_limit_status()
+        for s in status['resources'].values():
+            for n, lim in s.items():
+                if(lim['limit'] != lim['remaining']):
+                    print(n, ' - ', lim['limit'], ' : ', lim['remaining'])
+    # end of class twitter_api
