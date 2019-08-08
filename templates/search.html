@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>view</title>
+    <title>search</title>
 </head>
 
 <body>
-    {% for image in image_list %}
-    <img src="{{image}}" alt="">
-    {% endfor %}
+    <ul>
+        {% for data in content %}
+        <li>{{data.title}}: {{data.url}}</li>
+        {% endfor %}
+    </ul>
 </body>
 
 </html>

@@ -2,11 +2,21 @@ from ._app import app
 from flask import render_template, request
 from .twmng import twitter_api
 import twitter
+from .models import Books
 
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/search')
+def search_book():
+    twurl = request.args.get('twurl')
+    content = Books.query.filter_by(url=twurl).all()
+    if content is None:
+        return render_template('index.html')
+    return render_template('search.html', twurl=twurl, content=content)
 
 
 @app.route('/view')
@@ -21,7 +31,7 @@ def view_book():
 
     tw.get_api_status()
 
-    tweet_list = []
+    tweet_list = tlist = []
 
     try:
         tweet_list.append(tw.get_tweet(root_twid))
@@ -30,6 +40,7 @@ def view_book():
     except twitter.api.TwitterHTTPError as e:
         print(e)
         return render_template('index.html')
+
     tweet_list = tweet_list + tlist
 
     image_list = []
