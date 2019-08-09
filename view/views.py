@@ -17,14 +17,22 @@ def index():
 def search_book():
     twurl = request.args.get('twurl')
     content = Books.query.filter_by(url=twurl).all()
+
+    # ここ引っかかってないので要修正
     if content is None:
-        return render_template('index.html')
+        return redirect(url_for('index'))
     return render_template('search.html', twurl=twurl, content=content)
 
 
 @app.route('/view')
 def view_book():
-    pass
+    twurl = request.args.get('twurl')
+    content = Books.query.filter_by(url=twurl).first()
+
+    j = open('json/'+content.jsonfile, 'r')
+    image_list = json.load(j)['image_list']
+
+    return render_template('view.html', image_list=image_list)
 
 
 @app.route('/fetch')
@@ -32,9 +40,9 @@ def fetch_book():
     tw = twitter_api()
     tw.login_twitter()
 
+    # ツイートID切り出し
     twurl = request.args.get('twurl')[8:].split('/')[-1].split('?')[0]
     root_twid = int(twurl)
-    # root_twid = 1158573410516996097
 
     tw.get_api_status()
 

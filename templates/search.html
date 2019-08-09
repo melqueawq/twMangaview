@@ -1,25 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "layout.html" %}
+{% block content %}
+<ul>
+    {% for data in content %}
+    <li><a href="/view?twurl={{data.url}}">{{data.title}}: {{data.url}}</a></li>
+    {% endfor %}
+</ul>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>search</title>
-</head>
-
-<body>
-    <ul>
-        {% for data in content %}
-        <li><a href="/view?{{data.url}}">{{data.title}}: {{data.url}}</a></li>
-        {% endfor %}
-    </ul>
-
-    <form action="/fetch" method="get">
-        <input type="hidden" name="twurl" value="{{twurl}}">
-        <input type="text" name="title" placeholder="タイトル">
-        <input type="submit" value="webから取り込む">
-    </form>
-</body>
-
-</html>
+<form action="/fetch" method="get">
+    <input type="hidden" name="twurl" value="{{twurl}}">
+    <input type="text" name="title" placeholder="タイトル">
+    <input type="submit" value="webから取り込む">
+</form>
+{% endblock %}
