@@ -1,7 +1,24 @@
 {% extends "layout.html" %}
 {% block content %}
 
-{% for image in image_list %}
-<img src="{{image}}" alt="">
-{% endfor %}
+<div id="contents">
+    <div class="viewer" id="viewer">
+        <div class="page"></div>
+        <div class="page"></div>
+    </div>
+    <div class="navigator">
+        <div class="bar">
+            <div class="seeker"></div>
+        </div>
+        <p id="pagenum"></p>
+    </div>
+</div>
+
+<script>
+    let image_list = [];
+    {% for image in imgl %}
+    image_list.push("{{image}}");
+    {% endfor %}
+</script>
+<script src="static/js/viewer.js"></script>
 {% endblock %}

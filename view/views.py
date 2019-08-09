@@ -32,7 +32,7 @@ def view_book():
     j = open('json/'+content.jsonfile, 'r')
     image_list = json.load(j)['image_list']
 
-    return render_template('view.html', image_list=image_list)
+    return render_template('view.html', imgl=image_list)
 
 
 @app.route('/fetch')
