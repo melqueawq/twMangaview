@@ -15,8 +15,12 @@ def index():
 
 @app.route('/search')
 def search_book():
-    twurl = request.args.get('twurl')
-    content = Books.query.filter_by(url=twurl).all()
+    query = request.args.get('query')
+    sbox = request.args.get('sbox')
+    if(sbox == 'title'):
+        content = Books.query.filter(Books.title.like('%'+twurl+'%')).all()
+    elif(sbox == 'url'):
+        content = Books.query.filter_by(url=twurl).all()
 
     # ここ引っかかってないので要修正
     if content is None:

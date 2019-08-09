@@ -1,13 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<link rel="stylesheet" href="static/css/viewer.css">
 <div id="contents">
     <div class="viewer" id="viewer">
         <div class="page"></div>
         <div class="page"></div>
     </div>
     <div class="navigator">
-        <div class="bar">
+        <div class="bar" id="bar">
             <div class="seeker"></div>
         </div>
         <p id="pagenum"></p>
