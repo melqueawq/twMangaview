@@ -59,9 +59,15 @@ def fetch_book():
             image_data['image_list'].append(images['media_url'])
 
     # json出力
-    j = open(twurl + '.json', 'w')
+    j = open('json/' + twurl + '.json', 'w')
     json.dump(image_data, j)
 
     # db登録
+    d = Books(title=request.args.get('title'),
+              author='@'+tweet_list[0]['user']['screen_name'],
+              url=request.args.get('twurl'),
+              jsonfile=twurl + '.json')
+    db.session.add(d)
+    db.session.commit()
 
-    return redirect(url_for('/search?'+twurl))
+    return redirect(url_for('search_book', twurl=request.args.get('twurl')))
