@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
+{% if message = 'tapi' %}
+Twitter APIの上限に達しました。 <br>
+{% endif %}
+
 ツイートURLを入力
 <br>
 <form action="/search" method="get" class="row">

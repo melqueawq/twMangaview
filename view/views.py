@@ -17,15 +17,14 @@ def index():
 def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
-    if(sbox == 'title'):
-        content = Books.query.filter(Books.title.like('%'+twurl+'%')).all()
-    elif(sbox == 'url'):
-        content = Books.query.filter_by(url=twurl).all()
+    if sbox == 'title':
+        content = Books.query.filter(Books.title.like('%'+query+'%')).all()
+    elif sbox == 'url':
+        content = Books.query.filter_by(url=query).all()
 
-    # ここ引っかかってないので要修正
-    if content is None:
+    if len(content) == 0:
         return redirect(url_for('index'))
-    return render_template('search.html', twurl=twurl, content=content)
+    return render_template('search.html', twurl=query, content=content)
 
 
 @app.route('/view')
@@ -48,8 +47,6 @@ def fetch_book():
     twurl = request.args.get('twurl')[8:].split('/')[-1].split('?')[0]
     root_twid = int(twurl)
 
-    tw.get_api_status()
-
     tweet_list = tlist = []
 
     try:
@@ -59,7 +56,7 @@ def fetch_book():
                                          root_twid)
     except twitter.api.TwitterHTTPError as e:
         print(e)
-        return render_template('index.html')
+        return redirect(url_for('/'), message='tapi')
 
     tweet_list = tweet_list + tlist
 

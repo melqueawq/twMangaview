@@ -16,7 +16,6 @@ class twitter_api:
             gets = self.api.statuses.user_timeline(
                 id=name, count=200, include_rts=False, page=i)
             if(len(gets) == 0):
-                print(i)
                 break
             tweets += gets
 
