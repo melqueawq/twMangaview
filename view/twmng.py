@@ -12,9 +12,12 @@ class twitter_api:
         tweets = []
 
         # ツイート600件取得
-        for i in range(1, 3):
-            tweets += self.api.statuses.user_timeline(
+        for i in range(1, 17):
+            gets = self.api.statuses.user_timeline(
                 id=name, count=200, include_rts=False, page=i)
+            if(len(gets) == 0):
+                break
+            tweets += gets
 
         twid = root_twid
         tweet_list = []

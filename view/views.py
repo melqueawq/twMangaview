@@ -15,16 +15,27 @@ def index():
 
 @app.route('/search')
 def search_book():
-    twurl = request.args.get('twurl')
-    content = Books.query.filter_by(url=twurl).all()
-    if content is None:
-        return render_template('index.html')
-    return render_template('search.html', twurl=twurl, content=content)
+    query = request.args.get('query')
+    sbox = request.args.get('sbox')
+    if sbox == 'title':
+        content = Books.query.filter(Books.title.like('%'+query+'%')).all()
+    elif sbox == 'url':
+        content = Books.query.filter_by(url=query).all()
+
+    if len(content) == 0:
+        return redirect(url_for('index'))
+    return render_template('search.html', twurl=query, content=content)
 
 
 @app.route('/view')
 def view_book():
-    pass
+    twurl = request.args.get('twurl')
+    content = Books.query.filter_by(url=twurl).first()
+
+    j = open('json/'+content.jsonfile, 'r')
+    image_list = json.load(j)['image_list']
+
+    return render_template('view.html', imgl=image_list)
 
 
 @app.route('/fetch')
@@ -32,11 +43,9 @@ def fetch_book():
     tw = twitter_api()
     tw.login_twitter()
 
+    # ツイートID切り出し
     twurl = request.args.get('twurl')[8:].split('/')[-1].split('?')[0]
     root_twid = int(twurl)
-    # root_twid = 1158573410516996097
-
-    tw.get_api_status()
 
     tweet_list = tlist = []
 
@@ -47,7 +56,7 @@ def fetch_book():
                                          root_twid)
     except twitter.api.TwitterHTTPError as e:
         print(e)
-        return render_template('index.html')
+        return redirect(url_for('/'), message='tapi')
 
     tweet_list = tweet_list + tlist
 
@@ -59,9 +68,15 @@ def fetch_book():
             image_data['image_list'].append(images['media_url'])
 
     # json出力
-    j = open(twurl + '.json', 'w')
+    j = open('json/' + twurl + '.json', 'w')
     json.dump(image_data, j)
 
     # db登録
+    d = Books(title=request.args.get('title'),
+              author='@'+tweet_list[0]['user']['screen_name'],
+              url=request.args.get('twurl'),
+              jsonfile=twurl + '.json')
+    db.session.add(d)
+    db.session.commit()
 
-    return redirect(url_for('/search?'+twurl))
+    return redirect(url_for('search_book', twurl=request.args.get('twurl')))

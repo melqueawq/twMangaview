@@ -1,20 +1,23 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "layout.html" %}
+{% block content %}
+{% if message = 'tapi' %}
+Twitter APIの上限に達しました。 <br>
+{% endif %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>index</title>
-</head>
-
-<body>
-    ツイートURLを入力
-    <br>
-    <form action="/search" method="get">
-        <input type="text" name="twurl">
-        <input type="submit" value="検索">
-    </form>
-</body>
-
-</html>
+ツイートURLを入力
+<br>
+<form action="/search" method="get" class="row">
+    <div class="col s12">
+        <input type="text" name="query">
+    </div>
+    <div class="input-field col s4">
+        <select name="sbox">
+            <option value="title">タイトル検索</option>
+            <option value="url">URL検索</option>
+        </select>
+    </div>
+    <div class="col s4">
+        <input class="btn center-align" type="submit" value="検索">
+    </div>
+</form>
+{% endblock %}

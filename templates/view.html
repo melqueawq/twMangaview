@@ -1,17 +1,25 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "layout.html" %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>view</title>
-</head>
+<link rel="stylesheet" href="static/css/viewer.css">
+<div id="contents">
+    <div class="viewer" id="viewer">
+        <div class="page"></div>
+        <div class="page"></div>
+    </div>
+    <div class="navigator">
+        <div class="bar" id="bar">
+            <div class="seeker"></div>
+        </div>
+        <p id="pagenum"></p>
+    </div>
+</div>
 
-<body>
-    {% for image in image_list %}
-    <img src="{{image}}" alt="">
+<script>
+    let image_list = [];
+    {% for image in imgl %}
+    image_list.push("{{image}}");
     {% endfor %}
-</body>
-
-</html>
+</script>
+<script src="static/js/viewer.js"></script>
+{% endblock %}
