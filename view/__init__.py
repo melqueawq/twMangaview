@@ -1,4 +1,4 @@
 from ._app import app
 from . import views
 
-app.config.from_object('view.config')  # 追加
+app.config.from_object('view.config')

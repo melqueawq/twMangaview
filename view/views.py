@@ -17,14 +17,16 @@ def index():
 def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
+    content = []
     if sbox == 'title':
         content = Books.query.filter(Books.title.like('%'+query+'%')).all()
     elif sbox == 'url':
         content = Books.query.filter_by(url=query).all()
 
-    if len(content) == 0:
-        return redirect(url_for('index'))
-    return render_template('search.html', twurl=query, content=content)
+    # if len(content) == 0:
+    #    return redirect(url_for('index'))
+    return render_template('search.html', twurl=query, content=content,
+                           sbox=sbox)
 
 
 @app.route('/view')
@@ -79,4 +81,5 @@ def fetch_book():
     db.session.add(d)
     db.session.commit()
 
-    return redirect(url_for('search_book', twurl=request.args.get('twurl')))
+    return redirect(url_for('search_book', query=request.args.get('twurl'),
+                            sbox='url'))

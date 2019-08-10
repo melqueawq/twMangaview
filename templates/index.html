@@ -1,23 +1,21 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} 
 {% block content %}
-{% if message = 'tapi' %}
-Twitter APIの上限に達しました。 <br>
-{% endif %}
-
-ツイートURLを入力
-<br>
+{% if message == 'tapi' %}
+Twitter APIの上限に達しました。 <br />
+{% endif %} ツイートURLを入力
+<br />
 <form action="/search" method="get" class="row">
-    <div class="col s12">
-        <input type="text" name="query">
-    </div>
-    <div class="input-field col s4">
-        <select name="sbox">
-            <option value="title">タイトル検索</option>
-            <option value="url">URL検索</option>
-        </select>
-    </div>
-    <div class="col s4">
-        <input class="btn center-align" type="submit" value="検索">
-    </div>
+  <div class="col s12">
+    <input type="text" name="query" />
+  </div>
+  <div class="input-field col s4">
+    <select name="sbox">
+      <option value="title">タイトル検索</option>
+      <option value="url">URL検索</option>
+    </select>
+  </div>
+  <div class="col s4">
+    <input class="btn center-align" type="submit" value="検索" />
+  </div>
 </form>
 {% endblock %}
