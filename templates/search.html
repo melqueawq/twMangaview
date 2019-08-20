@@ -1,16 +1,30 @@
 {% extends "layout.html" %}
 {% block content %}
-<ul>
-    {% for data in content %}
-    <li><a href="/view?twurl={{data.url}}">{{data.title}}: {{data.author}}</a></li>
-    {% endfor %}
-</ul>
-
-{% if sbox == 'url' %}
-<form action="/fetch" method="get">
-    <input type="hidden" name="twurl" value="{{twurl}}">
-    <input type="text" name="title" placeholder="タイトル">
-    <input type="submit" value="webから取り込む">
-</form>
-{% endif %}
+<div class="ui text container">
+    <div class="ui relaxed divided list">
+        {% for data in content %}
+        <div class="item">
+            <div class="content">
+                <a class="header" href="/view?twurl={{data.url}}">{{data.title}}</a>
+                <div class="description">{{data.author}}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if sbox == 'url' %}
+    <form action="/fetch" method="get">
+        <input type="hidden" name="twurl" value="{{twurl}}">
+        <div class="ui action input">
+            <input type="text" name="title" placeholder="タイトル">
+            <select name="sbox" class="ui compact selection dropdown">
+                <option value="thread">スレッド</option>
+                <option value="quote">引用</option>
+            </select>
+            <button class="ui button" type="submit">
+                webから取り込む
+            </button>
+        </div>
+    </form>
+    {% endif %}
+</div>
 {% endblock %}

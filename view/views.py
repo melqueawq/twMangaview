@@ -45,6 +45,9 @@ def fetch_book():
     tw = twitter_api()
     tw.login_twitter()
 
+    # 引用かスレッドか
+    sbox = request.args.get('sbox')
+
     # ツイートID切り出し
     twurl = request.args.get('twurl')[8:].split('/')[-1].split('?')[0]
     root_twid = int(twurl)
@@ -55,7 +58,7 @@ def fetch_book():
         # ツイートを持ってくる
         tweet_list.append(tw.get_tweet(root_twid))
         tlist = tw.get_self_conversation(tweet_list[0]['user']['screen_name'],
-                                         root_twid)
+                                         root_twid, mode=sbox)
     except twitter.api.TwitterHTTPError as e:
         print(e)
         return redirect(url_for('/'), message='tapi')
