@@ -4,14 +4,16 @@ from .access_token import Token
 
 class twitter_api:
     def login_twitter(self):
-        self.api = twitter.Twitter(
-            auth=twitter.OAuth(Token.ACCESS_TOKEN, Token.ACCESS_TOKEN_SECRET,
-                               Token.CONSUMER_KEY, Token.CONSUMER_SECRET))
 
-    def get_self_conversation(self, name, root_twid):
+        bearer_token = twitter.oauth2_dance(
+            Token.CONSUMER_KEY, Token.CONSUMER_SECRET)
+        self.api = twitter.Twitter(
+            auth=twitter.OAuth2(bearer_token=bearer_token), retry=True)
+
+    def get_self_conversation(self, name, root_twid, mode='thread'):
         tweets = []
 
-        # ツイート600件取得
+        # ツイート3200件取得
         for i in range(1, 17):
             gets = self.api.statuses.user_timeline(
                 id=name, count=200, include_rts=False, page=i)
@@ -22,14 +24,26 @@ class twitter_api:
         twid = root_twid
         tweet_list = []
 
-        # スレッド取得
         while True:
             twid_tmp = twid
             for tweet in tweets:
-                if(tweet['in_reply_to_status_id'] == twid):
-                    tweet_list.append(tweet)
-                    twid = tweet['id']
+                if(mode == 'thread'):
+                    # スレッド
+                    if('extended_entities' not in tweet):
+                        continue
 
+                    if(tweet['in_reply_to_status_id'] == twid):
+                        tweet_list.append(tweet)
+                        twid = tweet['id']
+                elif(mode == 'quote'):
+                    # 引用
+                    if('quoted_status_id' not in tweet):
+                        continue
+
+                    if(tweet['quoted_status_id'] == twid):
+                        t = self.get_tweet(tweet['in_reply_to_status_id'])
+                        tweet_list.append(t)
+                        twid = tweet['id']
             if(twid_tmp == twid):
                 break
 
