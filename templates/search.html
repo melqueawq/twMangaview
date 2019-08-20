@@ -1,12 +1,18 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="ui text container">
+<div class="ui main text container">
+    <div class="ui header">
+        <h2>Search result</h2>
+    </div>
+    <p>found {{content|length}} items.</p>
     <div class="ui relaxed divided list">
         {% for data in content %}
         <div class="item">
             <div class="content">
-                <a class="header" href="/view?twurl={{data.url}}">{{data.title}}</a>
-                <div class="description">{{data.author}}</div>
+                <a class="ui header" href="/view?twurl={{data.url}}">{{data.title}}</a>
+                <div class="ui description">
+                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a>
+                </div>
             </div>
         </div>
         {% endfor %}
