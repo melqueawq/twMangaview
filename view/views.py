@@ -18,10 +18,14 @@ def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
     content = []
-    if sbox == 'title':
+    if (sbox == 'title'):
         content = Books.query.filter(Books.title.like('%'+query+'%')).all()
-    elif sbox == 'url':
+    elif (sbox == 'url'):
         content = Books.query.filter_by(url=query).all()
+    elif (sbox == 'author'):
+        if('@' not in query):
+            query = '@' + query
+        content = Books.query.filter_by(author=query).all()
 
     # if len(content) == 0:
     #    return redirect(url_for('index'))
@@ -37,7 +41,7 @@ def view_book():
     j = open('json/'+content.jsonfile, 'r')
     image_list = json.load(j)['image_list']
 
-    return render_template('view.html', imgl=image_list)
+    return render_template('view.html', imgl=image_list, title=content.title)
 
 
 @app.route('/fetch')

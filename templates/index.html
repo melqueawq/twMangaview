@@ -7,10 +7,11 @@ Twitter APIの上限に達しました。 <br />
 <div class="ui main text container">
     <form action="/search" method="get">
         <div class="ui action input">
-            <input type="text" placeholder="URL or Title" name="query" />
+            <input type="text" placeholder="Title or URL or Author ID" name="query" />
             <select name="sbox" class="ui compact selection dropdown">
-                <option value="title">title</option>
+                <option value="title">Title</option>
                 <option value="url">URL</option>
+                <option value="author">Author ID</option>
             </select>
             <button class="ui button" type="submit">
                 <i class="search icon"></i>
