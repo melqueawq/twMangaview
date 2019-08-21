@@ -1,35 +1,34 @@
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>twMangaView</title>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"
+    ></script>
 
-    <link rel="stylesheet" href="static/css/viewer.css">
-</head>
+    <link rel="stylesheet" href="static/css/viewer.css" />
+  </head>
 
-<body>
-    </div>
-
+  <body>
     <div id="contents">
-        <div class="viewer" id="viewer">
-            <div class="page"></div>
-            <div class="page"></div>
-            <div class="page"></div>
-        </div>
+      <div class="viewer" id="viewer">
+        <div class="page"></div>
+        <div class="page"></div>
+        <div class="page"></div>
+      </div>
     </div>
 
     <script>
-        let image_list = [];
-        {% for image in imgl %}
-        image_list.push("{{image}}");
-        {% endfor %}
+      let image_list = [];
+      {% for image in imgl %}
+      image_list.push("{{image}}");
+      {% endfor %}
     </script>
     <script src="static/js/viewer.js"></script>
     <div class="ui divider"></div>
-</body>
-
+  </body>
 </html>
