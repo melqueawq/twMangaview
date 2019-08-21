@@ -4,7 +4,7 @@ from .access_token import Token
 
 class twitter_api:
     def login_twitter(self):
-
+        # 読み取りだけなのでOAuth2
         bearer_token = twitter.oauth2_dance(
             Token.CONSUMER_KEY, Token.CONSUMER_SECRET)
         self.api = twitter.Twitter(
@@ -26,24 +26,31 @@ class twitter_api:
 
         while True:
             twid_tmp = twid
-            for tweet in tweets:
+            for i, tweet in enumerate(tweets):
                 if(mode == 'thread'):
-                    # スレッド
-                    if('extended_entities' not in tweet):
+                    # 対象ツイートにリプライを送っているツイートを取得
+                    if(tweet['in_reply_to_status_id'] != twid):
                         continue
 
-                    if(tweet['in_reply_to_status_id'] == twid):
-                        tweet_list.append(tweet)
-                        twid = tweet['id']
+                    t = tweet
                 elif(mode == 'quote'):
-                    # 引用
+                    # 引用でないツイートは無視
                     if('quoted_status_id' not in tweet):
                         continue
 
-                    if(tweet['quoted_status_id'] == twid):
-                        t = self.get_tweet(tweet['in_reply_to_status_id'])
-                        tweet_list.append(t)
-                        twid = tweet['id']
+                    if(tweet['quoted_status_id'] != twid):
+                        continue
+
+                    t = self.get_tweet(tweet['in_reply_to_status_id'])
+
+                # 取得したツイートに画像がない場合は無視
+                if('extended_entities' not in t):
+                    continue
+                if('media' not in t['extended_entities']):
+                    continue
+                tweet_list.append(t)
+                twid = t['id']
+
             if(twid_tmp == twid):
                 break
 
@@ -60,4 +67,4 @@ class twitter_api:
             for n, lim in s.items():
                 if(lim['limit'] != lim['remaining']):
                     print(n, ' - ', lim['limit'], ' : ', lim['remaining'])
-    # end of class twitter_api
+# end of class twitter_api
