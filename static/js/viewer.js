@@ -8,50 +8,77 @@ $(function () {
         reload();
     });
 
-    $('html').click(function (e) {
 
-        let x = e.pageX;
-        console.log('x:' + x + " w:" + w);
-        //次ページ
+    //
+    //  touchevent
+    //
+    let touchpos, direction;
+    $(window).on('touchstart', onTouchStart);
+    $(window).on('touchend', onTouchEnd);
+    $(window).on('mousedown', onTouchStart);
+    $(window).on('mouseup', onTouchEnd);
 
-        if (x < w / 2) {
+    function onTouchStart(e) {
+        touchpos = e.pageX;
+    }
+
+    function onTouchEnd(e) {
+        if (touchpos - e.pageX < -70) {
+            slide(1);
+        } else if (touchpos - e.pageX > 70) {
+            slide(-1);
+        } else if (Math.abs(touchpos - e.pageX) < 20) {
+            if (e.pageX < w / 6) {
+                slide(1);
+            } else if (e.pageX > w - w / 6) {
+                slide(-1);
+            }
+        }
+    }
+
+
+    //
+    //  slide page
+    //
+    function slide(vec = 1) {
+        if ($('.page').is(animated)) {
+            return;
+        }
+
+        let ope = "+="
+        if (vec == 1) {
             if (page >= image_list.length - 1) {
                 return
             }
             page += 1;
-            slide(0);
         } else {
             if (page <= 0) {
                 return
             }
             page -= 1;
-            slide(1);
+            ope = "-="
         }
-    });
-})
 
-function slide(vec = 0) {
-    let ope = "+="
-    if (vec != 0) {
-        ope = "-="
+        $('.page').animate({
+            'left': ope + w
+        }, {
+            duration: 300,
+            complete: function () {
+                reload();
+            }
+        });
     }
 
-    $('.page').animate({
-        'left': ope + w
-    }, {
-        duration: 300,
-        complete: function () {
-            reload();
-        }
-    });
-}
-
-function reload() {
-    w = $(window).width();
-    $($(".page").get().reverse()).each(function (index, element) {
-        if (page - 1 + index >= 0 && page - 1 + index < image_list.length) {
-            $(element).html('<img src="' + image_list[page - 1 + index] + '">');
-        }
-        $(element).css('left', w - w * index);
-    });
-}
+    //
+    //  image reload
+    //
+    function reload() {
+        w = $(window).width();
+        $($(".page").get().reverse()).each(function (index, element) {
+            if (page - 1 + index >= 0 && page - 1 + index < image_list.length) {
+                $(element).html('<img src="' + image_list[page - 1 + index] + '">');
+            }
+            $(element).css('left', w - w * index);
+        });
+    }
+})
