@@ -1,51 +1,57 @@
-let pagenum = 0;
+let page = 0;
+let w = $(window).width();
+let h = $(window).height();
 
-let pages;
+$(function () {
+    reload();
+    $(window).resize(function () {
+        reload();
+    });
 
-let reload = () => {
-    Array.from(pages).reverse().forEach((element, index) => {
-        if (index + pagenum >= 0 && index + pagenum < image_list.length) {
-            element.innerHTML = "<img src=" + image_list[index + pagenum] + ">"
+    $('html').click(function (e) {
+
+        let x = e.pageX;
+        console.log('x:' + x + " w:" + w);
+        //次ページ
+
+        if (x < w / 2) {
+            if (page >= image_list.length - 1) {
+                return
+            }
+            page += 1;
+            slide(0);
         } else {
-            element.innerHTML = ""
+            if (page <= 0) {
+                return
+            }
+            page -= 1;
+            slide(1);
         }
     });
+})
 
-    document.getElementById("pagenum").innerHTML = "<p>" + (pagenum + 1) + "/" + image_list.length + "</p>"
+function slide(vec = 0) {
+    let ope = "+="
+    if (vec != 0) {
+        ope = "-="
+    }
 
-    document.documentElement.style.setProperty('--page-max', (image_list.length - 1).toString());
-    document.documentElement.style.setProperty('--page-now', pagenum.toString());
+    $('.page').animate({
+        'left': ope + w
+    }, {
+        duration: 300,
+        complete: function () {
+            reload();
+        }
+    });
 }
 
-window.onload = function () {
-    pages = document.getElementsByClassName('page');
-    reload();
-
-    //ページクリック時のページめくり
-    Array.from(pages).forEach((element, index) => {
-        element.addEventListener("click", (event) => {
-            if (index == 0) {
-                pagenum += 2;
-                if (pagenum >= image_list.length - 1) {
-                    pagenum = image_list.length - 2;
-                }
-            } else {
-                pagenum -= 2;
-                if (pagenum < 0) {
-                    pagenum = 0;
-                }
-            }
-            reload();
-        });
-    });
-
-    //シークバークリック時のページめくり
-    document.getElementById("bar").addEventListener("click", (event) => {
-        clickx = event.offsetX;
-        blockx = event.srcElement.clientWidth;
-        onePageWidth = 1.0 / parseFloat(image_list.length);
-        clbl = parseFloat(clickx) / parseFloat(blockx);
-        pagenum = image_list.length - Math.ceil(clbl / onePageWidth);
-        reload();
+function reload() {
+    w = $(window).width();
+    $($(".page").get().reverse()).each(function (index, element) {
+        if (page - 1 + index >= 0 && page - 1 + index < image_list.length) {
+            $(element).html('<img src="' + image_list[page - 1 + index] + '">');
+        }
+        $(element).css('left', w - w * index);
     });
 }
