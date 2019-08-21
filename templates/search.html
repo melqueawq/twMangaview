@@ -17,7 +17,8 @@
         </div>
         {% endfor %}
     </div>
-    {% if sbox == 'url' %}
+    {% if sbox == 'url' and content|length == 0 %}
+    <div class="ui divider"></div>
     <form action="/fetch" method="get">
         <input type="hidden" name="twurl" value="{{twurl}}">
         <div class="ui action input">
