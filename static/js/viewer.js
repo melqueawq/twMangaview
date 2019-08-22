@@ -22,8 +22,6 @@ $(function () {
         }
     });
 
-
-
     reload();
     $(window).resize(function () {
         reload();
@@ -134,6 +132,9 @@ $(function () {
         });
 
         $("#pageDisp").html("" + (page + 1) + " / " + image_list.length);
+        $(".slider").slider({
+            value: (image_list.length - page)
+        });
 
         if (w < h) {
             console.log("w < h");

@@ -54,8 +54,8 @@ def search_book():
 
 @app.route('/view')
 def view_book():
-    twurl = request.args.get('twurl')
-    content = Books.query.filter_by(url=twurl).first()
+    id = request.args.get('id')
+    content = Books.query.filter_by(id=id).first()
 
     j = open('json/'+content.jsonfile, 'r')
     image_list = json.load(j)['image_list']
