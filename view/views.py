@@ -10,24 +10,38 @@ from ._app import db
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # メッセージがなかったら無視する
+    try:
+        message = session['message']
+        session['message'] = ""
+    except KeyError:
+        message = ''
+        pass
+    return render_template('index.html', message=message)
 
 
 @app.route('/search')
 def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
+
+    # メッセージがなかったら無視する
     try:
         message = session['message']
+        session['message'] = ""
     except KeyError:
         message = ''
         pass
+
     content = []
+
+    # セレクトボックスの中身に応じて処理を変更
     if (sbox == 'title'):
         content = Books.query.filter(Books.title.like('%'+query+'%')).all()
     elif (sbox == 'url'):
         content = Books.query.filter_by(url=query).all()
     elif (sbox == 'author'):
+        # @がなければつける
         if('@' not in query):
             query = '@' + query
         content = Books.query.filter_by(author=query).all()
