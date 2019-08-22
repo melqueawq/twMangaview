@@ -3,7 +3,7 @@ import json
 from .twmng import twitter_api
 
 from ._app import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session
 from .models import Books
 from ._app import db
 
@@ -17,6 +17,11 @@ def index():
 def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
+    try:
+        message = session['message']
+    except KeyError:
+        message = ''
+        pass
     content = []
     if (sbox == 'title'):
         content = Books.query.filter(Books.title.like('%'+query+'%')).all()
@@ -30,7 +35,7 @@ def search_book():
     # if len(content) == 0:
     #    return redirect(url_for('index'))
     return render_template('search.html', twurl=query, content=content,
-                           sbox=sbox)
+                           sbox=sbox, message=message)
 
 
 @app.route('/view')
@@ -65,7 +70,8 @@ def fetch_book():
                                          root_twid, mode=sbox)
     except twitter.api.TwitterHTTPError as e:
         print(e)
-        return redirect(url_for('/'), message='tapi')
+        session['message'] = 'tapi'
+        return redirect(url_for('/'))
 
     tweet_list = tweet_list + tlist
 
@@ -76,6 +82,12 @@ def fetch_book():
         for images in tweet['extended_entities']['media']:
             image_data['image_list'].append(images['media_url'])
 
+    # 画像ヒット数が1つ未満だったら登録せずにエラー
+    if(len(image_data['image_list']) <= 1):
+        session['message'] = 'not_manga'
+        return redirect(url_for('search_book', query=request.args.get('twurl'),
+                                sbox='url'))
+
     # json出力
     j = open('json/' + twurl + '.json', 'w')
     json.dump(image_data, j)
@@ -84,9 +96,11 @@ def fetch_book():
     d = Books(title=request.args.get('title'),
               author='@'+tweet_list[0]['user']['screen_name'],
               url=request.args.get('twurl'),
+              thumbnail=image_data['image_list'][0],
               jsonfile=twurl + '.json')
     db.session.add(d)
     db.session.commit()
 
+    session['message'] = 'success'
     return redirect(url_for('search_book', query=request.args.get('twurl'),
                             sbox='url'))

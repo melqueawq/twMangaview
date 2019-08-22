@@ -1,10 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="ui main text container">
-    <div class="ui header">
-        <h2>Search result</h2>
+    {% if message == 'not_manga' %}
+    <div class="ui negative message">
+        <i class="close icon"></i>
+        <div class="header">
+            画像を取得できませんでした。
+        </div>
+        <p>スレッドと引用を間違えていませんか？</p>
     </div>
-    <p>found {{content|length}} items.</p>
+    {% endif %}
+    {% if message == 'success' %}
+    <div class="ui success message">
+        <i class="close icon"></i>
+        <div class="header">
+            画像を取得しました。
+        </div>
+    </div>
+    {% endif %}
+
+
+    <div class="ui header">
+        <h2>検索結果</h2>
+    </div>
+    <p>{{content|length}} 件見つかりました。</p>
     <div class="ui relaxed divided list">
         {% for data in content %}
         <div class="item">
@@ -17,12 +36,12 @@
         </div>
         {% endfor %}
     </div>
-    {% if sbox == 'url' and content|length == 0 %}
+    {% if sbox == 'url'%}
     <div class="ui divider"></div>
     <form action="/fetch" method="get">
         <input type="hidden" name="twurl" value="{{twurl}}">
         <div class="ui action input">
-            <input type="text" name="title" placeholder="タイトル">
+            <input type="text" name="title" placeholder="タイトル" required>
             <select name="sbox" class="ui compact selection dropdown">
                 <option value="thread">スレッド</option>
                 <option value="quote">引用</option>
