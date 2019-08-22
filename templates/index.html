@@ -1,25 +1,44 @@
 {% extends "layout.html" %}
 {% block content %}
-{% if message == 'tapi' %}
-Twitter APIの上限に達しました。 <br />
-{% endif %}
-<br />
 <div class="ui main text container">
+    {% if message == 'tapi' %}
+    <div class="ui negative message">
+        <i class="close icon"></i>
+        <div class="header">
+            Twitter APIでエラーが発生しました。
+        </div>
+    </div>
+    {% endif %}
     <form action="/search" method="get">
-        <div class="ui action input">
+        <div class="ui fluid action input">
             <input type="text" placeholder="Title or URL or Author ID" name="query" />
             <select name="sbox" class="ui compact selection dropdown">
-                <option value="title">Title</option>
+                <option value="title">タイトル</option>
                 <option value="url">URL</option>
-                <option value="author">Author ID</option>
+                <option value="author">著者ID</option>
             </select>
             <button class="ui button" type="submit">
                 <i class="search icon"></i>
                 Search
             </button>
         </div>
-
     </form>
+    <div class="ui divider"></div>
+    <h2 class="ui header">使い方</h2>
+    <div class="ui ordered list">
+        <a href="#search" class="item">検索する</a>
+        <a href="#get" class="item">取得する</a>
+    </div>
+
+    <div class="ui divider"></div>
+    <h3 id="search">検索する</h3>
+    <div id="content"></div>
+    <p>ページ上部の検索バーに探したいタイトル、先頭ツイートのURL、著者IDを入力することで書籍の検索を行うことができます。</p>
+    <p></p>
+
+    <div class="ui divider"></div>
+    <h3 id="get">取得する</h3>
+    <p>書籍が見つからなかった場合、URLから書籍を取得することができます。</p>
 </div>
 
 {% endblock %}
