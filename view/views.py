@@ -3,7 +3,7 @@ import json
 from .twmng import twitter_api
 
 from ._app import app
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, jsonify
 from .models import Books
 from ._app import db
 
@@ -61,6 +61,22 @@ def view_book():
     image_list = json.load(j)['image_list']
 
     return render_template('view.html', imgl=image_list, title=content.title)
+
+
+@app.route('/signin')
+def login_twitter():
+    tw = twitter_api()
+    oauth_url = tw.request_token()
+    return redirect(oauth_url)
+
+
+@app.route('/oauth_callback')
+def oauth_login():
+    oauth_verifier = request.args.get('oauth_verifier')
+    tw = twitter_api()
+    oauth_token, oauth_token_secret = tw.get_oauth_token(oauth_verifier)
+    tw.login_twitter_oauth(oauth_token, oauth_token_secret)
+    return redirect(url_for('index'))
 
 
 @app.route('/fetch')
