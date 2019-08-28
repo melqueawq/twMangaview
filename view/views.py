@@ -85,6 +85,11 @@ def oauth_login():
     session['oauth_token'] = oauth_token
     session['oauth_secret'] = oauth_secret
     tw.login_twitter_oauth(oauth_token, oauth_secret)
+
+    screen_name, profile_image_url = tw.get_account()
+    session['screen_name'] = screen_name
+    session['profile_image_url'] = profile_image_url
+
     return redirect(url_for('index'))
 
 
@@ -93,7 +98,14 @@ def signout():
     if('oauth_token' in session):
         session.pop('oauth_token', None)
         session.pop('oauth_secret', None)
+        session.pop('screen_name', None)
     return redirect(url_for('index'))
+
+
+@app.route('/profile')
+def profile():
+    # DBからリクエストのユーザー名のユーザを探す
+    return render_template('profile.html')
 
 
 @app.route('/fetch')
