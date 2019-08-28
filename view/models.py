@@ -11,13 +11,29 @@ class Books(db.Model):
     url = db.Column(db.Text)
     thumbnail = db.Column(db.Text)
     jsonfile = db.Column(db.Text)
+    user_id = db.Column(db.Integer)
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
     def __repr__(self):
-        return f'<Books id={self.id} author={self.author} url={self.url} jsonfile={self.jsonfile}>'
+        return f'<Books id={self.id} jsonfile={self.jsonfile}>'
+
+
+class Users(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    screen_name = db.Column(db.Text)
+    jsonfile = db.Column(db.Text)
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return f'<Users id={self.id} sn={self.screen_name}>'
 
 
 def init():
