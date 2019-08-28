@@ -30,8 +30,6 @@ from .access_token import Token
 
 
 class twitter_api:
-    oauth_token = ""
-    oauth_token_secret = ""
 
     def request_token(self, token_filename=None, open_browser=True):
         oc = 'http://127.0.0.1:5000/oauth_callback'
@@ -43,22 +41,22 @@ class twitter_api:
             auth=twitter.OAuth('', '', consumer_key, consumer_secret),
             format='', api_version=None)
         a = tw.oauth.request_token(oauth_callback=oc)
-        twitter_api.oauth_token, twitter_api.oauth_token_secret = self.parse_oauth_tokens(
+        oauth_token, oauth_secret = self.parse_oauth_tokens(
             a)
 
-        oauth_url = ('https://api.twitter.com/oauth/authenticate?oauth_token=' +
-                     twitter_api.oauth_token)
-        return oauth_url
+        oauth_url = ('https://api.twitter.com/oauth/authenticate?'
+                     + 'oauth_token=' + oauth_token)
+        return oauth_url, oauth_token, oauth_secret
 
-    def get_oauth_token(self, oauth_verifier):
+    def get_oauth_token(self, oauth_token, oauth_secret, oauth_verifier):
         tw = twitter.Twitter(
             auth=twitter.OAuth(
-                twitter_api.oauth_token, twitter_api.oauth_token_secret,
+                oauth_token, oauth_secret,
                 Token.CONSUMER_KEY, Token.CONSUMER_SECRET),
             format='', api_version=None)
-        twitter_api.oauth_token, twitter_api.oauth_token_secret = self.parse_oauth_tokens(
+        oauth_token, oauth_secret = self.parse_oauth_tokens(
             tw.oauth.access_token(oauth_verifier=oauth_verifier))
-        return twitter_api.oauth_token, twitter_api.oauth_token_secret
+        return oauth_token, oauth_secret
 
     def parse_oauth_tokens(self, result):
         for r in result.split('&'):
@@ -69,9 +67,9 @@ class twitter_api:
                 oauth_token_secret = v
         return oauth_token, oauth_token_secret
 
-    def login_twitter_oauth(self, oauth_token, oauth_token_secret):
-        twitter_api.api = twitter.Twitter(
-            auth=twitter.OAuth(oauth_token, oauth_token_secret,
+    def login_twitter_oauth(self, oauth_token, oauth_secret):
+        self.api = twitter.Twitter(
+            auth=twitter.OAuth(oauth_token, oauth_secret,
                                Token.CONSUMER_KEY, Token.CONSUMER_SECRET))
 
     def login_twitter(self):

@@ -1,56 +1,56 @@
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>twMangaView</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
-    />
-    <script
-      src="https://code.jquery.com/jquery-3.1.1.min.js"
-      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 
-    <style type="text/css">
-      .main.container {
-        margin-top: 5em;
-      }
-    </style>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>twMangaView</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 
-  <body>
-    <div class="ui fixed main menu">
-      <div class="ui container">
-        <div class="header item">
-          twMangaView
-        </div>
+  <style type="text/css">
+    .main.container {
+      margin-top: 5em;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ui fixed main menu">
+    <div class="ui container">
+      <div class="header item">
+        twMangaView
+      </div>
+      <div class="item">
+        <a href="/" style="color:#000000;">Top</a>
+      </div>
+      <div class="right menu">
         <div class="item">
-          <a href="/" style="color:#000000;">Top</a>
-        </div>
-        <div class="right">
-          <div class="item">
-            <a href="/signin">sign in twitter</a>
-          </div>
+          {% if 'oauth_token' in session %}
+          <a href="/signout">sign out</a>
+          {% else %}
+          <a href="/signin">sign in with twitter</a>
+          {% endif %}
         </div>
       </div>
     </div>
+  </div>
 
-    {% block content %} {% endblock %}
-    <div class="ui divider"></div>
+  {% block content %} {% endblock %}
+  <div class="ui divider"></div>
 
-    <script>
-      $(document).ready(function() {
-        $(".ui.dropdown").dropdown();
-      });
-      $(".message .close").on("click", function() {
-        $(this)
-          .closest(".message")
-          .transition("fade");
-      });
-    </script>
-  </body>
+  <script>
+    $(document).ready(function () {
+      $(".ui.dropdown").dropdown();
+    });
+    $(".message .close").on("click", function () {
+      $(this)
+        .closest(".message")
+        .transition("fade");
+    });
+  </script>
+</body>
+
 </html>

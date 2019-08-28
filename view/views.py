@@ -3,7 +3,7 @@ import json
 from .twmng import twitter_api
 
 from ._app import app
-from flask import render_template, request, redirect, url_for, session, jsonify
+from flask import render_template, request, redirect, url_for, session
 from .models import Books
 from ._app import db
 
@@ -13,7 +13,7 @@ def index():
     # メッセージがなかったら無視する
     try:
         message = session['message']
-        session['message'] = ""
+        session.pop('message', None)
     except KeyError:
         message = ''
         pass
@@ -28,7 +28,7 @@ def search_book():
     # メッセージがなかったら無視する
     try:
         message = session['message']
-        session['message'] = ""
+        session.pop('message', None)
     except KeyError:
         message = ''
         pass
@@ -66,7 +66,9 @@ def view_book():
 @app.route('/signin')
 def login_twitter():
     tw = twitter_api()
-    oauth_url = tw.request_token()
+    oauth_url, oauth_token, oauth_secret = tw.request_token()
+    session['oauth_token'] = oauth_token
+    session['oauth_secret'] = oauth_secret
     return redirect(oauth_url)
 
 
@@ -74,8 +76,23 @@ def login_twitter():
 def oauth_login():
     oauth_verifier = request.args.get('oauth_verifier')
     tw = twitter_api()
-    oauth_token, oauth_token_secret = tw.get_oauth_token(oauth_verifier)
-    tw.login_twitter_oauth(oauth_token, oauth_token_secret)
+
+    oauth_token = session['oauth_token']
+    oauth_secret = session['oauth_secret']
+    oauth_token, oauth_secret = tw.get_oauth_token(
+        oauth_token, oauth_secret, oauth_verifier)
+
+    session['oauth_token'] = oauth_token
+    session['oauth_secret'] = oauth_secret
+    tw.login_twitter_oauth(oauth_token, oauth_secret)
+    return redirect(url_for('index'))
+
+
+@app.route('/signout')
+def signout():
+    if('oauth_token' in session):
+        session.pop('oauth_token', None)
+        session.pop('oauth_secret', None)
     return redirect(url_for('index'))
 
 
