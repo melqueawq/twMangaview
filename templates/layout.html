@@ -31,10 +31,19 @@
         <div class="item">
           <a href="/" style="color:#000000;">Top</a>
         </div>
-        <div class="right">
+        <div class="right menu">
+          {% if session['oauth_token']%}
+          <div class="item">
+            {{ session["screen_name"] }}
+          </div>
+          <div class="item">
+            <a href="/signout">sign out</a>
+          </div>
+          {% else %}
           <div class="item">
             <a href="/signin">sign in twitter</a>
           </div>
+          {% endif %}
         </div>
       </div>
     </div>

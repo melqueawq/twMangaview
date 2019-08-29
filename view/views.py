@@ -66,7 +66,9 @@ def view_book():
 @app.route('/signin')
 def login_twitter():
     tw = twitter_api()
-    oauth_url = tw.request_token()
+    oauth_url, oauth_token, oauth_secret = tw.request_token()
+    session['oauth_token'] = oauth_token
+    session['oauth_secret'] = oauth_secret
     return redirect(oauth_url)
 
 
@@ -74,8 +76,24 @@ def login_twitter():
 def oauth_login():
     oauth_verifier = request.args.get('oauth_verifier')
     tw = twitter_api()
-    oauth_token, oauth_token_secret = tw.get_oauth_token(oauth_verifier)
-    tw.login_twitter_oauth(oauth_token, oauth_token_secret)
+    oauth_token, oauth_secret = tw.get_oauth_token(
+        oauth_verifier, session['oauth_token'], session['oauth_secret'])
+    session['oauth_token'] = oauth_token
+    session['oauth_secret'] = oauth_secret
+    tw.login_twitter_oauth(oauth_token, oauth_secret)
+
+    uj = tw.get_user()
+    session['screen_name'] = uj['screen_name']
+    session['icon_url'] = uj['profile_image_url_https']
+
+    return redirect(url_for('index'))
+
+
+@app.route('/signout')
+def logout():
+    session.pop('oauth_token', None)
+    session.pop('oauth_secter', None)
+    session.pop('screen_name', None)
     return redirect(url_for('index'))
 
 
