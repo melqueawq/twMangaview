@@ -1,5 +1,6 @@
 from ._app import db
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 
 class Books(db.Model):
@@ -11,7 +12,8 @@ class Books(db.Model):
     url = db.Column(db.Text)
     thumbnail = db.Column(db.Text)
     jsonfile = db.Column(db.Text)
-    user_id = db.Column(db.Integer)
+    user_id = db.Column(db.Text)
+    datetime = db.Column(db.DateTime, default=datetime.now())
 
     def save_to_db(self):
         db.session.add(self)

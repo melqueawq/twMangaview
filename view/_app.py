@@ -11,5 +11,5 @@ Migrate(app, db)
 
 @app.before_first_request
 def create_tables():
-    from view.models import Books
+    from view.models import Books, Users
     db.create_all()
