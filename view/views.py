@@ -4,10 +4,10 @@ from .twmng import twitter_api
 
 from ._app import app
 from flask import render_template, request, redirect, url_for, session
-from .models import Books
+from .models import Books, Users
 from ._app import db
 
-
+# index
 @app.route('/')
 def index():
     # メッセージがなかったら無視する
@@ -19,7 +19,7 @@ def index():
         pass
     return render_template('index.html', message=message)
 
-
+# 検索
 @app.route('/search')
 def search_book():
     query = request.args.get('query')
@@ -51,18 +51,18 @@ def search_book():
     return render_template('search.html', twurl=query, content=content,
                            sbox=sbox, message=message)
 
-
+# ビューワ
 @app.route('/view')
 def view_book():
     id = request.args.get('id')
     content = Books.query.filter_by(id=id).first()
 
-    j = open('json/'+content.jsonfile, 'r')
+    j = open('json/books/'+content.jsonfile, 'r')
     image_list = json.load(j)['image_list']
 
     return render_template('view.html', imgl=image_list, title=content.title)
 
-
+# サインイン
 @app.route('/signin')
 def login_twitter():
     tw = twitter_api()
@@ -71,7 +71,7 @@ def login_twitter():
     session['oauth_secret'] = oauth_secret
     return redirect(oauth_url)
 
-
+# oauth認証のコールバック
 @app.route('/oauth_callback')
 def oauth_login():
     oauth_verifier = request.args.get('oauth_verifier')
@@ -90,9 +90,20 @@ def oauth_login():
     session['screen_name'] = screen_name
     session['profile_image_url'] = profile_image_url
 
+    # ユーザ登録
+    user = Users.query.filter_by(screen_name=screen_name).all()
+    if not user:
+        data = {"books": []}
+        j = open('json/user/' + screen_name + '.json', 'w')
+        json.dump(data, j)
+        d = Users(screen_name=screen_name,
+                  jsonfile=screen_name+'.json')
+        db.session.add(d)
+        db.session.commit()
+
     return redirect(url_for('index'))
 
-
+# サインアウト
 @app.route('/signout')
 def signout():
     if('oauth_token' in session):
@@ -101,13 +112,22 @@ def signout():
         session.pop('screen_name', None)
     return redirect(url_for('index'))
 
-
-@app.route('/profile')
-def profile():
+# プロフィール
+@app.route('/profile/<screen_name>')
+def profile(screen_name):
     # DBからリクエストのユーザー名のユーザを探す
-    return render_template('profile.html')
+    user = Users.query.filter_by(screen_name=screen_name).first()
+    screen_id = user.screen_id
+    j = open('json/user/'+user.jsonfile, 'r')
+    for b in j['books']:
+        pass
 
+    if user:
+        return render_template('profile.html', screen_id=screen_id)
+    else:
+        return redirect(url_for('index'))
 
+# Twitterから取得する
 @app.route('/fetch')
 def fetch_book():
     tw = twitter_api()
@@ -148,7 +168,7 @@ def fetch_book():
                                 sbox='url'))
 
     # json出力
-    j = open('json/' + twurl + '.json', 'w')
+    j = open('json/books/' + twurl + '.json', 'w')
     json.dump(image_data, j)
 
     # db登録
@@ -156,7 +176,8 @@ def fetch_book():
               author='@'+tweet_list[0]['user']['screen_name'],
               url=request.args.get('twurl'),
               thumbnail=image_data['image_list'][0],
-              jsonfile=twurl + '.json')
+              jsonfile=twurl + '.json',
+              user_id=session['screen_name'])
     db.session.add(d)
     db.session.commit()
 
