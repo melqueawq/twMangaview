@@ -6,6 +6,7 @@ from ._app import app
 from flask import render_template, request, redirect, url_for, session
 from .models import Books, Users
 from ._app import db
+from datetime import datetime
 
 # index
 @app.route('/')
@@ -92,7 +93,7 @@ def oauth_login():
     # ユーザ登録
     user = Users.query.filter_by(screen_name=screen_name).all()
     if not user:
-        data = {"books": []}
+        data = {"favorites": []}
         j = open('json/user/' + screen_name + '.json', 'w')
         json.dump(data, j)
         d = Users(screen_name=screen_name,
@@ -167,15 +168,17 @@ def fetch_book():
                                 sbox='url'))
 
     # json出力
-    j = open('json/books/' + twurl + '.json', 'w')
-    json.dump(image_data, j)
+    with open('json/books/' + twurl + "_" +
+              int(datetime.now().timestamp()) + '.json', 'w') as bj:
+        json.dump(image_data, bj)
 
     # db登録
     d = Books(title=request.args.get('title'),
               author='@'+tweet_list[0]['user']['screen_name'],
               url=request.args.get('twurl'),
               thumbnail=image_data['image_list'][0],
-              jsonfile=twurl + '.json',
+              jsonfile=twurl + "_" +
+              int(datetime.now().timestamp()) + '.json',
               user_id=session['screen_name'])
     db.session.add(d)
     db.session.commit()
