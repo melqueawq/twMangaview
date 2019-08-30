@@ -31,13 +31,16 @@
             <div class="content">
                 <a class="header" href="/view?id={{data.id}}" style="font-size:20px;">{{data.title}}</a>
                 <div class="description" style="font-size:12px;">
-                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a>
+                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a><br>
+                    {% if session['screen_name'] == data.user_id %}
+                    <a href="/">削除</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-    {% if sbox == 'url'%}
+    {% if sbox == 'url' and 'screen_name' in session%}
     <div class="ui divider"></div>
     <form action="/fetch" method="get">
         <input type="hidden" name="twurl" value="{{twurl}}">

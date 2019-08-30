@@ -77,15 +77,14 @@ def oauth_login():
     oauth_verifier = request.args.get('oauth_verifier')
     tw = twitter_api()
 
-    oauth_token = session['oauth_token']
-    oauth_secret = session['oauth_secret']
     oauth_token, oauth_secret = tw.get_oauth_token(
-        oauth_token, oauth_secret, oauth_verifier)
+        session['oauth_token'], session['oauth_secret'], oauth_verifier)
 
     session['oauth_token'] = oauth_token
     session['oauth_secret'] = oauth_secret
     tw.login_twitter_oauth(oauth_token, oauth_secret)
 
+    # アカウント情報取得
     screen_name, profile_image_url = tw.get_account()
     session['screen_name'] = screen_name
     session['profile_image_url'] = profile_image_url
