@@ -6,7 +6,6 @@ from ._app import app
 from flask import render_template, request, redirect, url_for, session
 from .models import Books, Users
 from ._app import db
-from datetime import datetime
 
 # index
 @app.route('/')
@@ -58,7 +57,7 @@ def view_book():
     id = request.args.get('id')
     content = Books.query.filter_by(id=id).first()
 
-    j = open('json/books/'+content.jsonfile, 'r')
+    j = open('json/books/'+content.jsonfile+'.json', 'r')
     image_list = json.load(j)['image_list']
 
     return render_template('view.html', imgl=image_list, title=content.title)
@@ -94,7 +93,7 @@ def oauth_login():
     user = Users.query.filter_by(screen_name=screen_name).all()
     if not user:
         data = {"books": [], "favorites": []}
-        j = open('json/user/' + screen_name + '.json', 'w')
+        j = open('json/users/' + screen_name + '.json', 'w')
         json.dump(data, j)
         d = Users(screen_name=screen_name,
                   jsonfile=screen_name+'.json')
@@ -135,6 +134,10 @@ def profile(screen_name):
 # Twitterから取得する
 @app.route('/fetch')
 def fetch_book():
+    if ('screen_name' not in session):
+        # セッション切れの旨を伝える
+        return redirect(url_for('index'))
+
     tw = twitter_api()
     tw.login_twitter()
 
@@ -173,8 +176,7 @@ def fetch_book():
                                 sbox='url'))
 
     # json出力
-    with open('json/books/' + twurl + "_" +
-              int(datetime.now().timestamp()) + '.json', 'w') as bj:
+    with open('json/books/' + twurl + '.json', 'w') as bj:
         json.dump(image_data, bj)
 
     # db登録
