@@ -12,7 +12,6 @@ class Books(db.Model):
     url = db.Column(db.Text)
     thumbnail = db.Column(db.Text)
     jsonfile = db.Column(db.Text)
-    user_id = db.Column(db.Text)
     datetime = db.Column(db.DateTime, default=datetime.now())
 
     def save_to_db(self):

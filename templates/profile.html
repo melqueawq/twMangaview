@@ -1,7 +1,42 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="ui main text container">
-    <h2 class="ui header">{{screen_id}}</h2>
+    <h3 class="ui header">{{screen_name}}さんがお気に入りした書籍</h3>
+    {% if not favorites%}
+    <p>お気に入りした書籍はありません。</p>
+    {% else %}
+    <div class="ui large relaxed divided list">
+        {% for data in favorites %}
+        <div class="item">
+            <img src={{data.thumbnail}} alt="" class="ui avatar image" style="border-radius: 0;">
+            <div class="content">
+                <a class="header" href="/view?id={{data.id}}" style="font-size:20px;">{{data.title}}</a>
+                <div class="description" style="font-size:12px;">
+                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a><br>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
+    <h3 class="ui header">{{screen_name}}さんが追加した書籍</h3>
+    {% if not favorites%}
+    <p>追加した書籍はありません。</p>
+    {% else %}
+    <div class="ui large relaxed divided list">
+        {% for data in books %}
+        <div class="item">
+            <img src={{data.thumbnail}} alt="" class="ui avatar image" style="border-radius: 0;">
+            <div class="content">
+                <a class="header" href="/view?id={{data.id}}" style="font-size:20px;">{{data.title}}</a>
+                <div class="description" style="font-size:12px;">
+                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a><br>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

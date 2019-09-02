@@ -93,7 +93,7 @@ def oauth_login():
     # ユーザ登録
     user = Users.query.filter_by(screen_name=screen_name).all()
     if not user:
-        data = {"favorites": []}
+        data = {"books": [], "favorites": []}
         j = open('json/user/' + screen_name + '.json', 'w')
         json.dump(data, j)
         d = Users(screen_name=screen_name,
@@ -117,13 +117,18 @@ def signout():
 def profile(screen_name):
     # DBからリクエストのユーザー名のユーザを探す
     user = Users.query.filter_by(screen_name=screen_name).first()
-    screen_id = user.screen_id
-    j = open('json/user/'+user.jsonfile, 'r')
-    for b in j['books']:
-        pass
-
+    screen_name = user.screen_name
+    books = []
+    favorites = []
+    with open('json/user/'+user.jsonfile, 'r') as jf:
+        j = json.load(jf)
+        for b in j['books']:
+            books.append(Books.query.filter_by(id=b).all())
+        for f in j['favorite']:
+            favorites.append(Books.query.filter_by(id=f).all())
     if user:
-        return render_template('profile.html', screen_id=screen_id)
+        return render_template('profile.html', screen_name=screen_name,
+                               books=books, favorites=favorites)
     else:
         return redirect(url_for('index'))
 
@@ -177,11 +182,17 @@ def fetch_book():
               author='@'+tweet_list[0]['user']['screen_name'],
               url=request.args.get('twurl'),
               thumbnail=image_data['image_list'][0],
-              jsonfile=twurl + "_" +
-              int(datetime.now().timestamp()) + '.json',
-              user_id=session['screen_name'])
+              jsonfile=twurl)
     db.session.add(d)
     db.session.commit()
+
+    u = Users.query.filter_by(screen_name=session['screen_name']).first()
+    with open(u.jsonfile, 'r') as jf:
+        j = json.load(jf)
+        j['books'].append(d.id)
+
+    with open(u.jsonfile, 'w') as jf:
+        json.dump(j, jf)
 
     session['message'] = 'success'
     return redirect(url_for('search_book', query=request.args.get('twurl'),
