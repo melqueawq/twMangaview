@@ -4,7 +4,7 @@ from .twmng import twitter_api
 
 from ._app import app
 from flask import (render_template, request, redirect,
-                   url_for, session, Response)
+                   url_for, session, jsonify)
 from .models import Books, Users
 from ._app import db
 
@@ -47,16 +47,22 @@ def search_book():
             query = '@' + query
         content = Books.query.filter_by(author=query).all()
 
+    j = None
+    if ('screen_name' in session):
+        user = Users.query.filter_by(
+            screen_name=session['screen_name']).first()
+        with open('json/users/' + user.jsonfile, 'r') as jf:
+            j = json.load(jf)
+
     # if len(content) == 0:
     #    return redirect(url_for('index'))
     return render_template('search.html', twurl=query, content=content,
-                           sbox=sbox, message=message)
+                           sbox=sbox, message=message, userjson=j)
 
 # ビューワ
 @app.route('/view/<bid>')
 def view_book(bid):
     content = Books.query.filter_by(id=bid).first()
-
     j = open('json/books/'+content.jsonfile+'.json', 'r')
     image_list = json.load(j)['image_list']
 
@@ -116,16 +122,18 @@ def signout():
 def profile(screen_name):
     # DBからリクエストのユーザー名のユーザを探す
     user = Users.query.filter_by(screen_name=screen_name).first()
-    screen_name = user.screen_name
-    books = []
-    favorites = []
-    with open('json/user/'+user.jsonfile, 'r') as jf:
-        j = json.load(jf)
-        for b in j['books']:
-            books.append(Books.query.filter_by(id=b).all())
-        for f in j['favorite']:
-            favorites.append(Books.query.filter_by(id=f).all())
+
     if user:
+        screen_name = user.screen_name
+        books = []
+        favorites = []
+        with open('json/users/'+user.jsonfile, 'r') as jf:
+            j = json.load(jf)
+            for b in j['books']:
+                books.extend(Books.query.filter_by(id=b).all())
+            for f in j['favorites']:
+                favorites.extend(Books.query.filter_by(id=f).all())
+        print(favorites[0])
         return render_template('profile.html', screen_name=screen_name,
                                books=books, favorites=favorites)
     else:
@@ -135,10 +143,27 @@ def profile(screen_name):
 # お気に入り
 @app.route('/favorite', methods=['POST'])
 def favorite():
+    if ('screen_name' not in session):
+        # セッション切れの旨を伝える
+        return redirect(url_for('index'))
+    user = Users.query.filter_by(screen_name=session['screen_name']).first()
+    with open('json/users/' + user.jsonfile, 'r') as jf:
+        j = json.load(jf)
+
     id = request.form['id']
-    response = Response()
-    response.status_code = 200
-    return response
+    if(id in j['favorites']):
+        j['favorites'].remove(id)
+        result = False
+    else:
+        j['favorites'].append(id)
+        result = True
+
+    with open('json/users/' + user.jsonfile, 'w') as bj:
+        json.dump(j, bj)
+
+    response = jsonify(result=result, status_code=200)
+
+    return response, 200
 
 # Twitterから取得する
 @app.route('/fetch', methods=["POST"])
@@ -198,11 +223,11 @@ def fetch_book():
     db.session.commit()
 
     u = Users.query.filter_by(screen_name=session['screen_name']).first()
-    with open('json/user/' + u.jsonfile, 'r') as jf:
+    with open('json/users/' + u.jsonfile, 'r') as jf:
         j = json.load(jf)
         j['books'].append(d.id)
 
-    with open('json/user/' + u.jsonfile, 'w') as jf:
+    with open('json/users/' + u.jsonfile, 'w') as jf:
         json.dump(j, jf)
 
     session['message'] = 'success'
