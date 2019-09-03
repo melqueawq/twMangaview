@@ -3,7 +3,8 @@ import json
 from .twmng import twitter_api
 
 from ._app import app
-from flask import render_template, request, redirect, url_for, session
+from flask import (render_template, request, redirect,
+                   url_for, session, Response)
 from .models import Books, Users
 from ._app import db
 
@@ -52,10 +53,9 @@ def search_book():
                            sbox=sbox, message=message)
 
 # ビューワ
-@app.route('/view')
-def view_book():
-    id = request.args.get('id')
-    content = Books.query.filter_by(id=id).first()
+@app.route('/view/<bid>')
+def view_book(bid):
+    content = Books.query.filter_by(id=bid).first()
 
     j = open('json/books/'+content.jsonfile+'.json', 'r')
     image_list = json.load(j)['image_list']
@@ -131,8 +131,17 @@ def profile(screen_name):
     else:
         return redirect(url_for('index'))
 
+
+# お気に入り
+@app.route('/favorite', methods=['POST'])
+def favorite():
+    id = request.form['id']
+    response = Response()
+    response.status_code = 200
+    return response
+
 # Twitterから取得する
-@app.route('/fetch')
+@app.route('/fetch', methods=["POST"])
 def fetch_book():
     if ('screen_name' not in session):
         # セッション切れの旨を伝える
@@ -142,10 +151,10 @@ def fetch_book():
     tw.login_twitter()
 
     # 引用かスレッドか
-    sbox = request.args.get('sbox')
+    sbox = request.form['sbox']
 
     # ツイートID切り出し
-    twurl = request.args.get('twurl')[8:].split('/')[-1].split('?')[0]
+    twurl = request.form['twurl'][8:].split('/')[-1].split('?')[0]
     root_twid = int(twurl)
 
     tweet_list = tlist = []
@@ -172,7 +181,7 @@ def fetch_book():
     # 画像ヒット数が1つ未満だったら登録せずにエラー
     if(len(image_data['image_list']) <= 1):
         session['message'] = 'not_manga'
-        return redirect(url_for('search_book', query=request.args.get('twurl'),
+        return redirect(url_for('search_book', query=request.form['twurl'],
                                 sbox='url'))
 
     # json出力
@@ -180,20 +189,20 @@ def fetch_book():
         json.dump(image_data, bj)
 
     # db登録
-    d = Books(title=request.args.get('title'),
+    d = Books(title=request.form['title'],
               author='@'+tweet_list[0]['user']['screen_name'],
-              url=request.args.get('twurl'),
+              url=request.form['twurl'],
               thumbnail=image_data['image_list'][0],
               jsonfile=twurl)
     db.session.add(d)
     db.session.commit()
 
     u = Users.query.filter_by(screen_name=session['screen_name']).first()
-    with open(u.jsonfile, 'r') as jf:
+    with open('json/user/' + u.jsonfile, 'r') as jf:
         j = json.load(jf)
         j['books'].append(d.id)
 
-    with open(u.jsonfile, 'w') as jf:
+    with open('json/user/' + u.jsonfile, 'w') as jf:
         json.dump(j, jf)
 
     session['message'] = 'success'
