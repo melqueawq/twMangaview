@@ -35,7 +35,17 @@
                     {% if 'screen_name' in session %}
                     <form name="favform" action="/favorite" method="POST">
                         <input type="hidden" name="id" value="{{data.id}}">
-                        <a href="javascript:favform[{{loop.index0}}].submit()" class="favmit">お気に入りに追加する</a>
+                        <a href="javascript:favform[{{loop.index0}}].submit()" class="favmit">
+                        {% if userjson %}
+                            {% if data.id in userjson['favorites'] %}
+                                お気に入りを解除する
+                            {% else %}
+                                お気に入りに追加する
+                            {% endif %}
+                        {% else %}
+                            お気に入りに追加する
+                        {% endif %}
+                        </a>
                     </form>
                     {% endif %}
                 </div>
