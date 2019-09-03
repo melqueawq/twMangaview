@@ -206,5 +206,5 @@ def fetch_book():
         json.dump(j, jf)
 
     session['message'] = 'success'
-    return redirect(url_for('search_book', query=request.args.get('twurl'),
+    return redirect(url_for('search_book', query=request.form['twurl'],
                             sbox='url'))
