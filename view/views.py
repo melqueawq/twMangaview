@@ -12,12 +12,11 @@ from ._app import db
 @app.route('/')
 def index():
     # メッセージがなかったら無視する
-    try:
+    if ('message' in session):
         message = session['message']
         session.pop('message', None)
-    except KeyError:
+    else:
         message = ''
-        pass
     return render_template('index.html', message=message)
 
 # 検索
@@ -26,13 +25,11 @@ def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
 
-    # メッセージがなかったら無視する
-    try:
+    if ('message' in session):
         message = session['message']
         session.pop('message', None)
-    except KeyError:
+    else:
         message = ''
-        pass
 
     content = []
 

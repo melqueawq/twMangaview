@@ -33,6 +33,12 @@
                 <div class="description" style="font-size:12px;">
                     <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a> -
                     <a href="{{data.url}}">元ツイート</a><br>
+                    <a href="https://twitter.com/intent/retweet?tweet_id={{data.jsonfile}}" target="_blank">
+                        <i class="retweet icon"></i>リツイートする
+                    </a> |
+                    <a href="https://twitter.com/intent/like?tweet_id={{data.jsonfile}}" target="_blank">
+                        <i class="heart icon"></i>いいねする
+                    </a><br>
                     {% if 'screen_name' in session %}
                     <form name="favform" action="/favorite" method="POST">
                         <input type="hidden" name="id" value="{{data.id}}">

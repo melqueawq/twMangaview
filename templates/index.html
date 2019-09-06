@@ -9,6 +9,7 @@
         </div>
     </div>
     {% endif %}
+    <h1 class="ui header">twMangaView</h1>
     <form action="/search" method="get">
         <div class="ui fluid action input">
             <input type="text" placeholder="Title or URL or Author ID" name="query" />
@@ -24,21 +25,18 @@
         </div>
     </form>
     <div class="ui divider"></div>
-    <h1 class="ui header">twMangaView</h1>
     <h2 class="ui header">使い方</h2>
     <div class="ui ordered list">
         <a href="#search" class="item">検索する</a>
         <a href="#get" class="item">取得する</a>
         <a href="#login" class="item">ログインでできること</a>
+        <a href="#contact" class="item">お問い合わせ</a>
     </div>
 
-    <div class="ui divider"></div>
     <h3 id="search">検索する</h3>
     <p>ページ上部の検索バーに探したいタイトル、先頭ツイートのURL、著者IDのいずれかを入力することで
         書籍の検索を行うことができます。</p>
-    <p></p>
-
-    <div class="ui divider"></div>
+    <br>
     <h3 id="get">取得する</h3>
     <p>書籍が見つからなかった場合、URLから書籍を取得することができます。
         書籍の取得には<a href="/signin">Twitterでのログイン</a> が必要です。
@@ -47,8 +45,7 @@
         Twitter APIの仕様上取得できるツイートが最新3200件までのため、それ以前のデータを
         取得することはできません。
     </p>
-
-    <div class="ui divider"></div>
+    <br>
     <h3 id="login">ログインでできること</h3>
     <p>Twitterでログインしている場合は以下のことができるようになります。</p>
     <ul>
@@ -58,6 +55,9 @@
     </ul>
     <p>プロフィールページでは、お気に入り登録した書籍や
         取得した書籍の管理をすることができます。</p>
+    <br>
+    <h3 id="contact">お問い合わせ</h3>
+    <p>お問い合わせは<a href="https://twitter.com/tolt_santyoku">作者Twitter(@tolt_santyoku)</a>へお願いします。</p>
 </div>
 
 {% endblock %}
