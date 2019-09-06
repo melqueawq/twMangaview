@@ -129,11 +129,9 @@ def profile(screen_name):
         favorites = []
         with open('json/users/'+user.jsonfile, 'r') as jf:
             j = json.load(jf)
-            for b in j['books']:
-                books.extend(Books.query.filter_by(id=b).all())
-            for f in j['favorites']:
-                favorites.extend(Books.query.filter_by(id=f).all())
-        print(favorites[0])
+            books += [Books.query.filter_by(id=b).first() for b in j['books']]
+            favorites += [Books.query.filter_by(id=f).first()
+                          for f in j['favorites']]
         return render_template('profile.html', screen_name=screen_name,
                                books=books, favorites=favorites)
     else:
@@ -150,7 +148,7 @@ def favorite():
     with open('json/users/' + user.jsonfile, 'r') as jf:
         j = json.load(jf)
 
-    id = request.form['id']
+    id = int(request.form['id'])
     if(id in j['favorites']):
         j['favorites'].remove(id)
         result = False

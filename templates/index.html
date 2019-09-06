@@ -24,21 +24,40 @@
         </div>
     </form>
     <div class="ui divider"></div>
+    <h1 class="ui header">twMangaView</h1>
     <h2 class="ui header">使い方</h2>
     <div class="ui ordered list">
         <a href="#search" class="item">検索する</a>
         <a href="#get" class="item">取得する</a>
+        <a href="#login" class="item">ログインでできること</a>
     </div>
 
     <div class="ui divider"></div>
     <h3 id="search">検索する</h3>
-    <div id="content"></div>
-    <p>ページ上部の検索バーに探したいタイトル、先頭ツイートのURL、著者IDを入力することで書籍の検索を行うことができます。</p>
+    <p>ページ上部の検索バーに探したいタイトル、先頭ツイートのURL、著者IDのいずれかを入力することで
+        書籍の検索を行うことができます。</p>
     <p></p>
 
     <div class="ui divider"></div>
     <h3 id="get">取得する</h3>
-    <p>書籍が見つからなかった場合、URLから書籍を取得することができます。</p>
+    <p>書籍が見つからなかった場合、URLから書籍を取得することができます。
+        書籍の取得には<a href="/signin">Twitterでのログイン</a> が必要です。
+    </p>
+    <p>
+        Twitter APIの仕様上取得できるツイートが最新3200件までのため、それ以前のデータを
+        取得することはできません。
+    </p>
+
+    <div class="ui divider"></div>
+    <h3 id="login">ログインでできること</h3>
+    <p>Twitterでログインしている場合は以下のことができるようになります。</p>
+    <ul>
+        <li>書籍の取得</li>
+        <li>書籍のお気に入り登録</li>
+        <li>プロフィールページの閲覧</li>
+    </ul>
+    <p>プロフィールページでは、お気に入り登録した書籍や
+        取得した書籍の管理をすることができます。</p>
 </div>
 
 {% endblock %}
