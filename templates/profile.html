@@ -8,11 +8,20 @@
     <div class="ui large relaxed divided list">
         {% for data in favorites %}
         <div class="item">
-            <img src={{data.thumbnail}} alt="" class="ui avatar image" style="border-radius: 0;">
+            <img src={{data.thumbnail}} alt="" class="ui small avatar image" style="border-radius: 0;">
             <div class="content">
                 <a class="header" href="/view/{{data.id}}" style="font-size:20px;">{{data.title}}</a>
                 <div class="description" style="font-size:12px;">
-                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a><br>
+                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a> -
+                    <a href="{{data.url}}">元ツイート</a><br>
+                    {% if 'screen_name' in session %}
+                    <form name="favform" action="/favorite" method="POST">
+                        <input type="hidden" name="id" value="{{data.id}}">
+                        <a href="javascript:favform[{{loop.index0}}].submit()" class="favmit">
+                            お気に入りを解除する
+                        </a>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -27,11 +36,13 @@
     <div class="ui large relaxed divided list">
         {% for data in books %}
         <div class="item">
-            <img src={{data.thumbnail}} alt="" class="ui avatar image" style="border-radius: 0;">
+            <img src={{data.thumbnail}} alt="" class="ui small avatar image" style="border-radius: 0;">
             <div class="content">
                 <a class="header" href="/view/{{data.id}}" style="font-size:20px;">{{data.title}}</a>
                 <div class="description" style="font-size:12px;">
-                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a><br>
+                    <a href="https://twitter.com/{{data.author[1:]}}">{{data.author}}</a> -
+                    <a href="{{data.url}}">元ツイート</a><br>
+                    <a href="#">この書籍を削除する</a>
                 </div>
             </div>
         </div>
