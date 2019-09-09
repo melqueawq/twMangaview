@@ -5,6 +5,9 @@ from .access_token import Token
 
 class twitter_api:
 
+    # request_token, get_oauth_token, parse_oauth_token were
+    # created from sixohsix's Python Twitter Tools.
+    # copyright 2008 Mike Verdone
     def request_token(self, token_filename=None, open_browser=True):
         oc = 'http://127.0.0.1:5000/oauth_callback'
 
