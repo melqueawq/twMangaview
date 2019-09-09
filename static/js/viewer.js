@@ -4,7 +4,7 @@ let h = $(window).height();
 
 $(function () {
     //
-    // slider
+    // スライダー
     //
     $(".slider").slider({
         max: image_list.length,
@@ -23,10 +23,13 @@ $(function () {
     });
 
     reload();
+
+    //
+    // 画面サイズが変更されたら大きさなどを調整する
+    //
     $(window).resize(function () {
         reload();
     });
-
 
     //
     //  touchevent
@@ -61,7 +64,9 @@ $(function () {
         }
     }
 
-
+    //
+    // メニューの表示/非表示
+    //
     function menuToggle() {
         $("#menu").toggle("slide", {
             direction: "up",
@@ -79,7 +84,7 @@ $(function () {
     }
 
     //
-    //  slide page
+    //  ページのスライド
     //
     function slide(vec = 1) {
         if ($(".page").is(":animated")) {
@@ -112,13 +117,14 @@ $(function () {
     }
 
     //
-    //  image reload
+    //  画像リロード
     //
     function reload() {
         w = $(window).width();
         h = $(window).height();
 
         $(
+            //3ページ読み込みなおし
             $(".page")
             .get()
             .reverse()
@@ -126,23 +132,34 @@ $(function () {
             if (page - 1 + index >= 0 && page - 1 + index < image_list.length) {
                 $(element).html('<img src="' + image_list[page - 1 + index] + '">');
             }
-            let left = w - $(element).children("img").width();
-            console.log(left);
-            $(element).css("left", w - w * index + left / 2);
+
+            //img要素がロードされたら位置を調整する
+            if ($(element).children("img").length > 0) {
+                let parentelem = element;
+                $(element).children("img").on("load", function () {
+                    console.log(this)
+                    let left = w - this.width;
+                    $(parentelem).css("left", w - w * index + left / 2);
+                    //   $(parentelem).css("visibility", "hidden");
+                });
+            }
+
         });
 
+        //ページ数表記を変更
         $("#pageDisp").html("" + (page + 1) + " / " + image_list.length);
+
+        //スライダーを動かす
         $(".slider").slider({
             value: (image_list.length - page)
         });
 
+        //縦横の狭いほうに画像を合わせる
         if (w < h) {
-            console.log("w < h");
             $(".page img")
                 .css("width", "95%")
                 .css("height", "auto");
         } else {
-            console.log("w > h");
             $(".page img")
                 .css("width", "auto")
                 .css("height", "95vh");
