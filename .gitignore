@@ -7,3 +7,4 @@ view/access_token.py
 json
 data.db
 migrations
+.env

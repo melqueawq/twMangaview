@@ -69,7 +69,7 @@ def view_book(bid):
 @app.route('/signin')
 def login_twitter():
     tw = twitter_api()
-    oauth_url, oauth_token, oauth_secret = tw.request_token()
+    oauth_url, oauth_token, oauth_secret = tw.request_token(request.host_url)
     session['oauth_token'] = oauth_token
     session['oauth_secret'] = oauth_secret
     return redirect(oauth_url)
