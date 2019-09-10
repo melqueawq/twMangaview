@@ -4,7 +4,8 @@ view/__pycache__
 .vscode
 view/access_token.py
 .DS_Store
-json
+json/books/*
+json/users/*
 data.db
 migrations
 .env
