@@ -6,12 +6,9 @@ class twitter_api:
 
     def request_token(self, hosturl, token_filename=None, open_browser=True):
         oc = hosturl + 'oauth_callback'
-
-        consumer_key = CONSUMER_KEY
-        consumer_secret = CONSUMER_SECRET
-
+        print('oc = ' + oc)
         tw = twitter.Twitter(
-            auth=twitter.OAuth('', '', consumer_key, consumer_secret),
+            auth=twitter.OAuth('', '', CONSUMER_KEY, CONSUMER_SECRET),
             format='', api_version=None)
         a = tw.oauth.request_token(oauth_callback=oc)
         oauth_token, oauth_secret = self.parse_oauth_tokens(
