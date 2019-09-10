@@ -1,6 +1,5 @@
 import twitter
-
-from .access_token import Token
+from .config import CONSUMER_KEY, CONSUMER_SECRET
 
 
 class twitter_api:
@@ -8,8 +7,8 @@ class twitter_api:
     def request_token(self, hosturl, token_filename=None, open_browser=True):
         oc = hosturl + 'oauth_callback'
 
-        consumer_key = Token.CONSUMER_KEY
-        consumer_secret = Token.CONSUMER_SECRET
+        consumer_key = CONSUMER_KEY
+        consumer_secret = CONSUMER_SECRET
 
         tw = twitter.Twitter(
             auth=twitter.OAuth('', '', consumer_key, consumer_secret),
@@ -26,7 +25,7 @@ class twitter_api:
         tw = twitter.Twitter(
             auth=twitter.OAuth(
                 oauth_token, oauth_secret,
-                Token.CONSUMER_KEY, Token.CONSUMER_SECRET),
+                CONSUMER_KEY, CONSUMER_SECRET),
             format='', api_version=None)
         oauth_token, oauth_secret = self.parse_oauth_tokens(
             tw.oauth.access_token(oauth_verifier=oauth_verifier))
@@ -44,7 +43,7 @@ class twitter_api:
     def login_twitter_oauth(self, oauth_token, oauth_secret):
         self.api = twitter.Twitter(
             auth=twitter.OAuth(oauth_token, oauth_secret,
-                               Token.CONSUMER_KEY, Token.CONSUMER_SECRET))
+                               CONSUMER_KEY, CONSUMER_SECRET))
 
     def get_account(self):
         status = self.api.account.verify_credentials(skip_status=True)
@@ -53,7 +52,7 @@ class twitter_api:
     def login_twitter(self):
         # 読み取りだけなのでOAuth2
         bearer_token = twitter.oauth2_dance(
-            Token.CONSUMER_KEY, Token.CONSUMER_SECRET)
+            CONSUMER_KEY, CONSUMER_SECRET)
         self.api = twitter.Twitter(
             auth=twitter.OAuth2(bearer_token=bearer_token), retry=True)
 
