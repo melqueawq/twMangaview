@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="ui main container">
+<div class="main ui container">
     {% if message == 'tapi' %}
     <div class="ui negative message">
         <i class="close icon"></i>
@@ -15,7 +15,7 @@
             <input type="text" placeholder="Title or URL or Author ID" name="query" />
             <select name="sbox" class="ui compact selection dropdown">
                 <option value="title">タイトル</option>
-                <option value="url">URL</option>
+                <option value="url">先頭URL</option>
                 <option value="author">著者ID</option>
             </select>
             <button class="ui button" type="submit">
