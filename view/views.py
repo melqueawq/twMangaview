@@ -48,8 +48,7 @@ def search_book():
     if ('screen_name' in session):
         user = Users.query.filter_by(
             screen_name=session['screen_name']).first()
-        with open('json/users/' + user.jsonfile, 'r') as jf:
-            j = json.load(jf)
+        j = json.loads(user.jsonfile)
 
     # if len(content) == 0:
     #    return redirect(url_for('index'))
@@ -60,8 +59,7 @@ def search_book():
 @app.route('/view/<bid>')
 def view_book(bid):
     content = Books.query.filter_by(id=bid).first()
-    j = open('json/books/'+content.jsonfile+'.json', 'r')
-    image_list = json.load(j)['image_list']
+    image_list = json.loads(content.jsonfile)['image_list']
 
     return render_template('view.html', imgl=image_list, title=content.title)
 
@@ -96,10 +94,9 @@ def oauth_login():
     user = Users.query.filter_by(screen_name=screen_name).all()
     if not user:
         data = {"books": [], "favorites": []}
-        j = open('json/users/' + screen_name + '.json', 'w')
-        json.dump(data, j)
+
         d = Users(screen_name=screen_name,
-                  jsonfile=screen_name+'.json')
+                  jsonfile=json.dumps(data))
         db.session.add(d)
         db.session.commit()
 
@@ -124,11 +121,10 @@ def profile(screen_name):
         screen_name = user.screen_name
         books = []
         favorites = []
-        with open('json/users/'+user.jsonfile, 'r') as jf:
-            j = json.load(jf)
-            books += [Books.query.filter_by(id=b).first() for b in j['books']]
-            favorites += [Books.query.filter_by(id=f).first()
-                          for f in j['favorites']]
+        j = json.loads(user.jsonfile)
+        books += [Books.query.filter_by(id=b).first() for b in j['books']]
+        favorites += [Books.query.filter_by(id=f).first()
+                      for f in j['favorites']]
         return render_template('profile.html', screen_name=screen_name,
                                books=books, favorites=favorites)
     else:
@@ -142,8 +138,7 @@ def favorite():
         # セッション切れの旨を伝える
         return redirect(url_for('index'))
     user = Users.query.filter_by(screen_name=session['screen_name']).first()
-    with open('json/users/' + user.jsonfile, 'r') as jf:
-        j = json.load(jf)
+    j = json.load(user.jsonfile)
 
     id = int(request.form['id'])
     if(id in j['favorites']):
@@ -153,8 +148,8 @@ def favorite():
         j['favorites'].append(id)
         result = True
 
-    with open('json/users/' + user.jsonfile, 'w') as bj:
-        json.dump(j, bj)
+    user.jsonfile = json.dumps(j)
+    db.session.commit()
 
     response = jsonify(result=result, status_code=200)
 
@@ -204,27 +199,20 @@ def fetch_book():
         return redirect(url_for('search_book', query=request.form['twurl'],
                                 sbox='url'))
 
-    # json出力
-    with open('json/books/' + twurl + '.json', 'w') as bj:
-        json.dump(image_data, bj)
-
     # db登録
     d = Books(title=request.form['title'],
               author='@'+tweet_list[0]['user']['screen_name'],
               url=request.form['twurl'],
               thumbnail=image_data['image_list'][0],
-              jsonfile=twurl)
+              jsonfile=json.dumps(image_data))
     db.session.add(d)
-    db.session.commit()
 
     u = Users.query.filter_by(screen_name=session['screen_name']).first()
-    with open('json/users/' + u.jsonfile, 'r') as jf:
-        j = json.load(jf)
-        j['books'].append(d.id)
+    j = json.loads(u.jsonfile)
+    j['books'].append(d.id)
+    u.jsonfile = json.dumps(j)
 
-    with open('json/users/' + u.jsonfile, 'w') as jf:
-        json.dump(j, jf)
-
+    db.session.commit()
     session['message'] = 'success'
     return redirect(url_for('search_book', query=request.form['twurl'],
                             sbox='url'))

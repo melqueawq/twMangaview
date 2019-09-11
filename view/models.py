@@ -11,7 +11,7 @@ class Books(db.Model):
     author = db.Column(db.Text)
     url = db.Column(db.Text)
     thumbnail = db.Column(db.Text)
-    jsonfile = db.Column(db.Text)
+    jsonfile = db.Column(db.JSON)
     datetime = db.Column(db.DateTime, default=datetime.now())
 
     def save_to_db(self):
@@ -27,7 +27,7 @@ class Users(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     screen_name = db.Column(db.Text)
-    jsonfile = db.Column(db.Text)
+    jsonfile = db.Column(db.JSON)
 
     def save_to_db(self):
         db.session.add(self)
