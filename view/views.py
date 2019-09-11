@@ -138,7 +138,7 @@ def favorite():
         # セッション切れの旨を伝える
         return redirect(url_for('index'))
     user = Users.query.filter_by(screen_name=session['screen_name']).first()
-    j = json.load(user.jsonfile)
+    j = json.loads(user.jsonfile)
 
     id = int(request.form['id'])
     if(id in j['favorites']):
