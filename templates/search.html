@@ -23,9 +23,9 @@
     <div class="ui header">
         <h2>検索結果</h2>
     </div>
-    <p>{{content|length}} 件見つかりました。</p>
+    <p>{{content|length}} 件見つかりました。({{page}}ページ目)</p>
     <div class="ui large relaxed divided list">
-        {% for data in content %}
+        {% for data in content[cloop:cloop+10] %}
         <div class="item">
             <img src={{data.thumbnail}} alt="" class="ui small avatar image" style="border-radius: 0;">
             <div class="content">
@@ -62,11 +62,32 @@
         </div>
         {% endfor %}
     </div>
+    <div class="ui divider"></div>
+    <form action="/search" method="get">
+        <input type="hidden" name="query" value="{{twurl}}">
+        <input type="hidden" name="sbox" value="{{sbox}}">
+        <input type="hidden">
+        {% if page == 1 %}
+        <button class="ui left floated disabled button" type="submit" name="page" value="{{page-1}}">
+            {% else %}
+            <button class="ui left floated button" type="submit" name="page" value="{{page-1}}">
+                {% endif %}
+                前のページ
+            </button>
+            {% if cloop+10 > content|length %}
+            <button class="ui right floated disabled button" type="submit" name="page" value="{{page+1}}">
+                {% else %}
+                <button class="ui right floated button" type="submit" name="page" value="{{page+1}}">
+                    {% endif %}
+                    次のページ
+                </button>
+    </form>
+
     {% if sbox == 'url' and 'screen_name' in session%}
     <div class="ui divider"></div>
     <form action="/fetch" method="post">
         <input type="hidden" name="twurl" value="{{twurl}}">
-        <div class="ui action input">
+        <div class="ui fluid action input">
             <input type="text" name="title" placeholder="タイトル" required>
             <select name="sbox" class="ui compact selection dropdown">
                 <option value="thread">スレッド</option>

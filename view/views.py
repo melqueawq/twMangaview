@@ -24,6 +24,9 @@ def index():
 def search_book():
     query = request.args.get('query')
     sbox = request.args.get('sbox')
+    page = request.args.get('page')
+    cloop = 10 * (0 if page is None else int(page)-1)
+    page = 1 if page is None else int(page)
 
     if ('message' in session):
         message = session['message']
@@ -53,7 +56,8 @@ def search_book():
     # if len(content) == 0:
     #    return redirect(url_for('index'))
     return render_template('search.html', twurl=query, content=content,
-                           sbox=sbox, message=message, userjson=j)
+                           sbox=sbox, message=message, userjson=j, page=page,
+                           cloop=cloop)
 
 # ビューワ
 @app.route('/view/<bid>')
